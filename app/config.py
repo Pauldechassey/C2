@@ -3,11 +3,16 @@ from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-load_dotenv()
+load_dotenv(os.path.join(basedir, "..", ".env"))
 
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///app.db")
+    # PostgreSQL connection string
+    DATABASE_URL = os.getenv(
+        "DATABASE_URL",
+        "postgresql://user:password@localhost:5432/teamserver_db"
+    )
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_SORT_KEYS = False
-    SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
+    DEBUG = os.getenv("DEBUG", "False").lower() == "true"
