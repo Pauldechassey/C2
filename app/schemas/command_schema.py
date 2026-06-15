@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
-from app.enums import CommandStatus
+from app.enums.command_status import CommandStatus
 
 
 class CommandBase(BaseModel):

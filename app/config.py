@@ -7,10 +7,9 @@ load_dotenv(os.path.join(basedir, "..", ".env"))
 
 
 class Config:
-    # PostgreSQL connection string
     DATABASE_URL = os.getenv(
         "DATABASE_URL",
-        "postgresql://user:password@localhost:5432/teamserver_db"
+        "sqlite:///./app.db"
     )
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False

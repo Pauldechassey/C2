@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from ..database.database import Base
-from ..enums import CommandStatus
+from ..enums.command_status import CommandStatus
 
 
 class Command(Base):
