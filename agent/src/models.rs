@@ -9,7 +9,6 @@ pub struct Command {
 
 #[derive(Serialize, Deserialize)]
 pub struct CommandResponse {
-    pub id: i32,
     pub output: String,
     pub status: String,
 }

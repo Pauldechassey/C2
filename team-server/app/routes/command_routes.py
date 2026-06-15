@@ -14,7 +14,10 @@ def list_commands(db: Session = Depends(get_db)):
 
 @router.get("/next", response_model=CommandRead)
 def get_next_command(db: Session = Depends(get_db)):
-    return CommandService.get_next(db)
+    command = CommandService.get_next(db)
+    if not command:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No pending command")
+    return command
 
 @router.get("/by-status/{status}", response_model=list[CommandRead])
 def get_commands_by_status(status: CommandStatus, db: Session = Depends(get_db)):

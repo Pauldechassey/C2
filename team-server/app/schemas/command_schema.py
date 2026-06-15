@@ -8,7 +8,6 @@ class CommandBase(BaseModel):
     command: str = Field(..., min_length=1, max_length=10000)
     order: int
     status: CommandStatus = CommandStatus.PENDING
-    output: Optional[str] = None
 
 
 class CommandCreate(CommandBase):
@@ -24,6 +23,7 @@ class CommandUpdate(BaseModel):
 
 class CommandRead(CommandBase):
     id: int
+    output: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
