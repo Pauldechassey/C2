@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+
+from C2.app.enums.command_status import CommandStatus
 from ..models.command import Command
 
 
@@ -10,6 +12,10 @@ class CommandService:
     @staticmethod
     def get_by_id(db: Session, command_id: int):
         return db.query(Command).filter(Command.id == command_id).first()
+
+    @staticmethod
+    def get_next(db: Session):
+        return db.query(Command).filter(Command.status == CommandStatus.PENDING.value).order_by(Command.order).first()
 
     @staticmethod
     def create(db: Session, data: dict):

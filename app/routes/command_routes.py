@@ -12,6 +12,9 @@ router = APIRouter(prefix="/commands")
 def list_commands(db: Session = Depends(get_db)):
     return CommandService.get_all(db)
 
+@router.get("/next", response_model=CommandRead)
+def get_next_command(db: Session = Depends(get_db)):
+    return CommandService.get_next(db)
 
 @router.get("/by-status/{status}", response_model=list[CommandRead])
 def get_commands_by_status(status: CommandStatus, db: Session = Depends(get_db)):
