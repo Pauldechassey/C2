@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.database import engine
 from app.auth import init as auth_init, check_token
-from app.ws_manager import log_manager
+from app.ws_manager import log_manager, command_manager
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger("team-server")
@@ -65,6 +65,19 @@ async def ws_logs(ws: WebSocket, token: str = ""):
             await ws.receive_text()
     except WebSocketDisconnect:
         log_manager.disconnect(ws)
+
+
+@app.websocket("/ws/commands")
+async def ws_commands(ws: WebSocket, token: str = ""):
+    if not check_token(token):
+        await ws.close(code=1008)
+        return
+    await command_manager.connect(ws)
+    try:
+        while True:
+            await ws.receive_text()
+    except WebSocketDisconnect:
+        command_manager.disconnect(ws)
 
 
 @app.get("/", tags=["root"])

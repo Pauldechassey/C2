@@ -4,7 +4,7 @@ import CommandList from '../components/CommandList'
 import CommandResult from '../components/CommandResult'
 import CommandForm from '../components/CommandForm'
 import LogTerminal from '../components/LogTerminal'
-import { getCommands } from '../api/client'
+import { getCommands, deleteCommand } from '../api/client'
 
 export default function Dashboard() {
   const [commands, setCommands] = useState([])
@@ -13,17 +13,27 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchCommands()
-    const interval = setInterval(fetchCommands, 3000)
-    return () => clearInterval(interval)
+
+    const token = localStorage.getItem('token')
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const ws = new WebSocket(`${proto}//${location.host}/ws/commands?token=${token}`)
+    ws.onmessage = () => fetchCommands()
+
+    return () => ws.close()
   }, [])
 
   async function fetchCommands() {
     try {
       const data = await getCommands()
       setCommands(data)
-    } catch {
-      // ignore polling errors
-    }
+    } catch {}
+  }
+
+  async function handleDelete(id) {
+    try {
+      await deleteCommand(id)
+      if (selectedId === id) setSelectedId(null)
+    } catch {}
   }
 
   function logout() {
@@ -47,7 +57,7 @@ export default function Dashboard() {
 
       <div className="dashboard-body">
         <div className="command-panel">
-          <CommandList commands={commands} selectedId={selectedId} onSelect={setSelectedId} />
+          <CommandList commands={commands} selectedId={selectedId} onSelect={setSelectedId} onDelete={handleDelete} />
           <CommandForm
             onCreated={fetchCommands}
             nextOrder={commands.length + 1}

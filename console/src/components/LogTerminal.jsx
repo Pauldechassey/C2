@@ -9,6 +9,7 @@ export default function LogTerminal() {
     const proto = location.protocol === 'https:' ? 'wss:' : 'ws:'
     const ws = new WebSocket(`${proto}//${location.host}/ws/logs?token=${token}`)
 
+    ws.onopen = () => setLogs(prev => [...prev, '-- connected --'])
     ws.onmessage = e => setLogs(prev => [...prev.slice(-200), e.data])
     ws.onerror = () => setLogs(prev => [...prev, '-- connection error --'])
 

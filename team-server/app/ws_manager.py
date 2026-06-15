@@ -1,7 +1,7 @@
 from fastapi import WebSocket
 
 
-class LogManager:
+class _Manager:
     def __init__(self):
         self._connections: list[WebSocket] = []
 
@@ -24,4 +24,5 @@ class LogManager:
             self._connections.remove(ws)
 
 
-log_manager = LogManager()
+log_manager = _Manager()
+command_manager = _Manager()

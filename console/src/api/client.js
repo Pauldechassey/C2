@@ -33,3 +33,11 @@ export async function createCommand(command, order) {
   if (!res.ok) throw new Error('Failed to create command')
   return res.json()
 }
+
+export async function deleteCommand(id) {
+  const res = await fetch(`${BASE}/commands/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders()
+  })
+  if (!res.ok) throw new Error('Failed to delete command')
+}

@@ -1,4 +1,4 @@
-export default function CommandList({ commands, selectedId, onSelect }) {
+export default function CommandList({ commands, selectedId, onSelect, onDelete }) {
   return (
     <div className="command-list">
       <div className="panel-header">COMMANDS</div>
@@ -8,11 +8,12 @@ export default function CommandList({ commands, selectedId, onSelect }) {
             <th>#</th>
             <th>COMMAND</th>
             <th>STATUS</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {commands.length === 0 && (
-            <tr><td colSpan={3} className="empty">no commands</td></tr>
+            <tr><td colSpan={4} className="empty">no commands</td></tr>
           )}
           {commands.map(cmd => (
             <tr
@@ -23,6 +24,12 @@ export default function CommandList({ commands, selectedId, onSelect }) {
               <td className="dim">{cmd.order}</td>
               <td className="cmd-text">{cmd.command}</td>
               <td><StatusBadge status={cmd.status} /></td>
+              <td>
+                <button
+                  className="delete-btn"
+                  onClick={e => { e.stopPropagation(); onDelete(cmd.id) }}
+                >×</button>
+              </td>
             </tr>
           ))}
         </tbody>

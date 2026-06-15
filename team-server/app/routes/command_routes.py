@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..schemas.command_schema import CommandCreate, CommandRead, CommandUpdate
 from ..services.command_service import CommandService
 from ..database.database import get_db
 from ..enums.command_status import CommandStatus
+from ..ws_manager import command_manager
 
 router = APIRouter(prefix="/commands")
 
@@ -23,7 +24,6 @@ def get_next_command(db: Session = Depends(get_db)):
 def get_commands_by_status(status: CommandStatus, db: Session = Depends(get_db)):
     return CommandService.get_by_status(db, status.value)
 
-
 @router.get("/{command_id}", response_model=CommandRead)
 def get_command(command_id: int, db: Session = Depends(get_db)):
     command = CommandService.get_by_id(db, command_id)
@@ -33,22 +33,25 @@ def get_command(command_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=CommandRead, status_code=status.HTTP_201_CREATED)
-def create_command(command_in: CommandCreate, db: Session = Depends(get_db)):
-    return CommandService.create(db, command_in.dict())
-
+async def create_command(command_in: CommandCreate, db: Session = Depends(get_db)):
+    result = CommandService.create(db, command_in.dict())
+    await command_manager.broadcast("update")
+    return result
 
 @router.put("/{command_id}", response_model=CommandRead)
-def update_command(command_id: int, command_in: CommandUpdate, db: Session = Depends(get_db)):
+async def update_command(command_id: int, command_in: CommandUpdate, db: Session = Depends(get_db)):
     command = CommandService.get_by_id(db, command_id)
     if not command:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Command not found")
-    return CommandService.update(db, command, command_in.dict(exclude_unset=True))
-
+    result = CommandService.update(db, command, command_in.dict(exclude_unset=True))
+    await command_manager.broadcast("update")
+    return result
 
 @router.delete("/{command_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_command(command_id: int, db: Session = Depends(get_db)):
+async def delete_command(command_id: int, db: Session = Depends(get_db)):
     command = CommandService.get_by_id(db, command_id)
     if not command:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Command not found")
     CommandService.delete(db, command)
+    await command_manager.broadcast("update")
     return None
