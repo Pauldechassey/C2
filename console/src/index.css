@@ -126,12 +126,20 @@ body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidde
 .form-btn:hover:not(:disabled) { color: var(--green); border-color: var(--green); }
 .form-btn:disabled { opacity: 0.4; cursor: default; }
 
-/* ── delete button ── */
-.delete-btn {
+/* ── command row menu ── */
+.cmd-menu-cell { position: relative; width: 24px; }
+.menu-dots {
   background: none; border: none; color: var(--dim);
   font-size: 16px; cursor: pointer; padding: 0 4px; line-height: 1;
 }
-.delete-btn:hover { color: var(--red); }
+.menu-dots:hover { color: var(--text); }
+.menu-delete {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  background: var(--bg-panel); border: 1px solid var(--border);
+  color: var(--red); font-family: monospace; font-size: 11px; letter-spacing: 1px;
+  padding: 3px 10px; cursor: pointer; white-space: nowrap; z-index: 10;
+}
+.menu-delete:hover { background: rgba(255,68,68,0.1); }
 
 /* ── log terminal ── */
 .log-terminal { background: #0a0a0a; display: flex; flex-direction: column; overflow: hidden; }
