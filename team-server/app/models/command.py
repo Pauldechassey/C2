@@ -8,7 +8,7 @@ class Command(Base):
     __tablename__ = "commands"
 
     id = Column(Integer, primary_key=True, index=True)
-    command = Column(String(10000), unique=True, nullable=False, index=True)
+    command = Column(String(10000), nullable=False)
     output = Column(String(10000), nullable=True)
     order = Column(Integer, nullable=False)
     status = Column(String(20), nullable=False, default=CommandStatus.PENDING.value)

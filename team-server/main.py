@@ -1,9 +1,11 @@
 import logging
 import time
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.database import engine
+from app.auth import init as auth_init, check_token
+from app.ws_manager import log_manager
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger("team-server")
@@ -11,11 +13,15 @@ logger = logging.getLogger("team-server")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     from app.database.database import Base
     Base.metadata.create_all(bind=engine)
+    password = auth_init()
+    print("\n\033[92m" + "=" * 44)
+    print("   TEAM SERVER")
+    print("=" * 44)
+    print(f"   password : {password}")
+    print("=" * 44 + "\033[0m\n")
     yield
-    # Shutdown
 
 
 app = FastAPI(
@@ -24,16 +30,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    start = time.time()
-    response = await call_next(request)
-    duration = (time.time() - start) * 1000
-    client = request.client.host if request.client else "unknown"
-    logger.info(f"{client} | {request.method} {request.url.path} | {response.status_code} | {duration:.1f}ms")
-    return response
-
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -43,11 +39,41 @@ app.add_middleware(
 )
 
 
+SILENT_ROUTES = {("GET", "/commands/")}
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start = time.time()
+    response = await call_next(request)
+    duration = (time.time() - start) * 1000
+    client = request.client.host if request.client else "unknown"
+    msg = f"{client} | {request.method} {request.url.path} | {response.status_code} | {duration:.1f}ms"
+    logger.info(msg)
+    if (request.method, request.url.path) not in SILENT_ROUTES:
+        await log_manager.broadcast(msg)
+    return response
+
+
+@app.websocket("/ws/logs")
+async def ws_logs(ws: WebSocket, token: str = ""):
+    if not check_token(token):
+        await ws.close(code=1008)
+        return
+    await log_manager.connect(ws)
+    try:
+        while True:
+            await ws.receive_text()
+    except WebSocketDisconnect:
+        log_manager.disconnect(ws)
+
+
 @app.get("/", tags=["root"])
 def read_root():
     return {"message": "Team Server API is running"}
 
 
-# Register routers
 from app.routes.command_routes import router as command_router
+from app.routes.auth_routes import router as auth_router
+
 app.include_router(command_router, tags=["commands"])
+app.include_router(auth_router)
