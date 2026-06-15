@@ -1,4 +1,19 @@
+import { useState } from 'react'
+
 export default function CommandList({ commands, selectedId, onSelect, onDelete }) {
+  const [openId, setOpenId] = useState(null)
+
+  function toggleMenu(e, id) {
+    e.stopPropagation()
+    setOpenId(prev => prev === id ? null : id)
+  }
+
+  function handleDelete(e, id) {
+    e.stopPropagation()
+    setOpenId(null)
+    onDelete(id)
+  }
+
   return (
     <div className="command-list">
       <div className="panel-header">COMMANDS</div>
@@ -19,16 +34,18 @@ export default function CommandList({ commands, selectedId, onSelect, onDelete }
             <tr
               key={cmd.id}
               className={`cmd-row ${selectedId === cmd.id ? 'active' : ''}`}
-              onClick={() => onSelect(cmd.id)}
+              onClick={() => { setOpenId(null); onSelect(cmd.id) }}
             >
               <td className="dim">{cmd.order}</td>
               <td className="cmd-text">{cmd.command}</td>
               <td><StatusBadge status={cmd.status} /></td>
-              <td>
-                <button
-                  className="delete-btn"
-                  onClick={e => { e.stopPropagation(); onDelete(cmd.id) }}
-                >×</button>
+              <td className="cmd-menu-cell">
+                <button className="menu-dots" onClick={e => toggleMenu(e, cmd.id)}>⋮</button>
+                {openId === cmd.id && (
+                  <button className="menu-delete" onClick={e => handleDelete(e, cmd.id)}>
+                    supprimer
+                  </button>
+                )}
               </td>
             </tr>
           ))}
