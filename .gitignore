@@ -30,6 +30,10 @@ wheels/
 pip-wheel-metadata/
 share/python-wheels/
 
+# Rust
+target/
+Cargo.lock
+
 # IDE
 .vscode/
 .idea/
@@ -37,13 +41,11 @@ share/python-wheels/
 *.swo
 *~
 .DS_Store
+*.code-workspace
 
 # Environment variables
 .env
 .env.local
-
-# IDE specific
-*.code-workspace
 
 # Logs
 *.log

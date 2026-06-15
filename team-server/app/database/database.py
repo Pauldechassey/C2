@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, "..", ".env"))
 
-SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///./app.db")
+SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///./commands.db")
 
 connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URI.startswith("sqlite") else {}
 engine = create_engine(SQLALCHEMY_DATABASE_URI, connect_args=connect_args)

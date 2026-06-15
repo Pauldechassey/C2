@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from C2.app.enums.command_status import CommandStatus
+from ..enums.command_status import CommandStatus
 from ..models.command import Command
 
 

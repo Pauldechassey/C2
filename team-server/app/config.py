@@ -9,7 +9,7 @@ load_dotenv(os.path.join(basedir, "..", ".env"))
 class Config:
     DATABASE_URL = os.getenv(
         "DATABASE_URL",
-        "sqlite:///./app.db"
+        "sqlite:///./commands.db"
     )
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
