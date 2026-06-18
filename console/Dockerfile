@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies including devDependencies so local `vite` is available
 COPY package.json package-lock.json ./
-RUN npm install --include=dev --silent
+RUN npm install --include=dev --silent && npm install -g vite
 
 COPY . .
 
