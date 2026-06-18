@@ -23,10 +23,6 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box">
         <div className="login-header">
-          <span className="dot red" />
-          <span className="dot orange" />
-          <span className="dot green" />
-          <span className="login-title">TEAM SERVER</span>
         </div>
         <form onSubmit={handleSubmit}>
           <input

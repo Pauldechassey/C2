@@ -47,10 +47,6 @@ export default function Dashboard() {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-left">
-          <span className="dot red" />
-          <span className="dot orange" />
-          <span className="dot green" />
-          <span className="header-title">TEAM SERVER</span>
         </div>
         <button className="logout-btn" onClick={logout}>disconnect</button>
       </header>
