@@ -1,10 +1,10 @@
-FROM node:20-alpine
+FROM node:20-bullseye-slim
 
 WORKDIR /app
 
 # Install dependencies including devDependencies so local `vite` is available
 COPY package.json package-lock.json ./
-RUN npm ci --include=dev --silent
+RUN npm install --include=dev --silent
 
 COPY . .
 
