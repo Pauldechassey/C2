@@ -8,13 +8,13 @@ function authHeaders() {
   }
 }
 
-export async function login(password) {
+export async function login(username, password) {
   const res = await fetch(`${BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password })
+    body: JSON.stringify({ username, password })
   })
-  if (!res.ok) throw new Error('Invalid password')
+  if (!res.ok) throw new Error('Invalid credentials')
   return res.json()
 }
 

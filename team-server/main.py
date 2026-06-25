@@ -15,11 +15,11 @@ logger = logging.getLogger("team-server")
 async def lifespan(app: FastAPI):
     from app.database.database import Base
     Base.metadata.create_all(bind=engine)
-    password = auth_init()
+    auth_init()
     print("\n\033[92m" + "=" * 44)
     print("   TEAM SERVER")
     print("=" * 44)
-    print(f"   password : {password}")
+    print("   login : root / root")
     print("=" * 44 + "\033[0m\n")
     yield
 

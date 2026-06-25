@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { login } from '../api/client'
 
 export default function Login() {
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('root')
+  const [password, setPassword] = useState('root')
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
@@ -11,11 +12,11 @@ export default function Login() {
     e.preventDefault()
     setError('')
     try {
-      const { token } = await login(password)
+      const { token } = await login(username, password)
       localStorage.setItem('token', token)
       navigate('/')
     } catch {
-      setError('invalid password')
+      setError('invalid credentials')
     }
   }
 
